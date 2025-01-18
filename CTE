@@ -1,0 +1,18 @@
+#  Query to find the top 5 customers from the top 10 cities who’ve paid the highest total amounts to Rockbuster. 
+
+SELECT AVG(total_amount_paid.total_payment) AS average_payment
+FROM (
+    SELECT A.customer_id, SUM(P.amount) AS total_payment
+    FROM customer A
+    INNER JOIN payment P ON A.customer_id = P.customer_id
+    INNER JOIN address B ON A.address_id = B.address_id
+    INNER JOIN city C ON B.city_id = C.city_id
+    INNER JOIN country D ON C.country_id = D.country_id
+    WHERE D.country IN (
+        SELECT DISTINCT country 
+        FROM country
+    )
+    GROUP BY A.customer_id
+    ORDER BY total_payment DESC
+    LIMIT 5
+) AS total_amount_paid;
